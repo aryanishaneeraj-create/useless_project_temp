@@ -5,9 +5,13 @@ import os
 import tempfile
 from pathlib import Path
 
-from backend.detect import inspect_image
+import threading
+from backend.detect import inspect_image, get_model
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Warm up model in background thread without blocking server port binding
+threading.Thread(target=get_model, daemon=True).start()
 
 
 # ============================================================

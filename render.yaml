@@ -11,3 +11,7 @@ services:
         value: 3.11.9
       - key: FLASK_ENV
         value: production
+      - key: YOLO_CONFIG_DIR
+        value: /tmp/Ultralytics
+      - key: PYTHONUNBUFFERED
+        value: "1"

@@ -22,9 +22,6 @@ MODEL_PATH = os.environ.get(
     str(DEFAULT_MODEL_PATH) if DEFAULT_MODEL_PATH.exists() else "yoloe-11s-seg.pt"
 )
 
-print(f"Loading Sadya Auditor model from {MODEL_PATH}...")
-
-model = YOLOE(MODEL_PATH)
 
 
 # ============================================================
@@ -119,12 +116,20 @@ for dish, descriptions in DISH_PROMPTS.items():
 
 
 # ============================================================
-#                 SET YOLOE CLASSES
+#                 LAZY MODEL LOADER
 # ============================================================
 
-model.set_classes(PROMPTS)
+_model = None
 
-print("Sadya Auditor model ready!")
+def get_model():
+    global _model
+    if _model is None:
+        print(f"Loading Sadya Auditor model from {MODEL_PATH}...", flush=True)
+        m = YOLOE(MODEL_PATH)
+        m.set_classes(PROMPTS)
+        _model = m
+        print("Sadya Auditor model ready!", flush=True)
+    return _model
 
 
 # ============================================================
@@ -133,11 +138,13 @@ print("Sadya Auditor model ready!")
 
 def inspect_image(image_path):
 
-    print(f"Inspecting image: {image_path}")
+    print(f"Inspecting image: {image_path}", flush=True)
 
     # --------------------------------------------------------
     # Run YOLOE
     # --------------------------------------------------------
+
+    model = get_model()
 
     results = model.predict(
         source=image_path,

@@ -1,5 +1,28 @@
-venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environments and Secrets
 .env
+.env.local
 .vscode/
+.idea/
+
+# Large Model Weights and Temporary Artifacts (>100MB fails GitHub push)
+mobileclip_blt.ts
+*.part
+runs/
+dataset/
+yolo11n.pt
+
+# Operating System Files
+.DS_Store
+Thumbs.db

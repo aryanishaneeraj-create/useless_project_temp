@@ -1,1 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 Sadya Auditor 🚨 - AI Banana Leaf Police</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --leaf-dark: #12372A;
+            --leaf-green: #2d6a4f;
+            --leaf-light: #52b788;
+            --leaf-accent: #74c69d;
+            --bg: #f8faf9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --gold: #d97706;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--leaf-dark), var(--leaf-green));
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(18, 55, 42, 0.15);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #d8f3dc;
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 860px;
+            width: 100%;
+            margin: -1.5rem auto 3rem;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Upload Area */
+        .dropzone {
+            border: 2px dashed #94a3b8;
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            background: #fdfdfd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--leaf-green);
+            background: #f0fdf4;
+        }
+
+        .dropzone svg {
+            width: 52px;
+            height: 52px;
+            color: var(--leaf-green);
+            margin-bottom: 1rem;
+        }
+
+        .dropzone p {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropzone .btn-select {
+            display: inline-block;
+            background: var(--leaf-green);
+            color: white;
+            font-weight: 600;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .dropzone .btn-select:hover {
+            background: var(--leaf-dark);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Preview Area */
+        #preview-container {
+            display: none;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 380px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            object-fit: contain;
+        }
+
+        .preview-actions {
+            margin-top: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-audit {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .btn-audit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-reset {
+            background: #e2e8f0;
+            color: var(--text);
+            border: none;
+            padding: 0.85rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Loading Spinner */
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 2.5rem 1rem;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--leaf-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.25rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Display */
+        #results {
+            display: none;
+        }
+
+        .score-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+        }
+
+        .score-circle {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-weight: 800;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .score-max {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .verdict-box {
+            padding: 1.25rem;
+            border-left: 5px solid var(--gold);
+            background: #fffbeb;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .verdict-box h3 {
+            font-size: 1.05rem;
+            color: #92400e;
+            margin-bottom: 0.35rem;
+        }
+
+        .verdict-box p {
+            color: #78350f;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .violations-list {
+            list-style: none;
+            margin-bottom: 1.75rem;
+        }
+
+        .violations-list li {
+            padding: 0.75rem 1rem;
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.5rem;
+            color: #991b1b;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.85rem;
+        }
+
+        .dish-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dish-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .dish-name {
+            font-weight: 700;
+            text-transform: capitalize;
+            font-size: 1rem;
+        }
+
+        .dish-status {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .status-acceptable {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-violation {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-unknown {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .dish-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .dish-msg {
+            font-size: 0.825rem;
+            color: #334155;
+            font-style: italic;
+        }
+
+        /* API guide */
+        .api-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .api-info code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #0f172a;
+            font-family: monospace;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="badge">Kerala Sadhya Placement Inspector</div>
+        <h1>🌿 Sadya Auditor 🚨</h1>
+        <p>Zero tolerance for spatial disrespect on the sacred banana leaf.</p>
+    </header>
+
+    <main>
+        <!-- Upload Card -->
+        <div class="card">
+            <div id="dropzone" class="dropzone">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <h3>Upload Your Sadhya Plate Image</h3>
+                <p>Drag & drop your photo here or click to select</p>
+                <label for="image-input" class="btn-select">Select Image</label>
+                <input type="file" id="image-input" accept="image/*">
+            </div>
+
+            <!-- Preview & Actions -->
+            <div id="preview-container">
+                <img id="image-preview" alt="Sadya preview">
+                <div class="preview-actions">
+                    <button id="btn-audit" class="btn-audit" onclick="runAudit()">Audit Sadya 🔍</button>
+                    <button class="btn-reset" onclick="resetForm()">Choose Another</button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading">
+                <div class="spinner"></div>
+                <h3 id="loading-msg">Summoning the Kerala Sadhya Council...</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Analyzing banana leaf coordinates & dish placements</p>
+            </div>
+        </div>
+
+        <!-- Audit Results Card -->
+        <div id="results" class="card">
+            <div class="score-hero">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Audit Report</h2>
+                    <p style="color: var(--text-muted);"><span id="dishes-count">0</span> dishes detected on the leaf</p>
+                </div>
+                <div id="score-badge" class="score-circle" style="background: var(--leaf-green);">
+                    <div id="score-val" class="score-number">100</div>
+                    <div class="score-max">/ 100</div>
+                </div>
+            </div>
+
+            <div class="verdict-box">
+                <h3>Official Verdict</h3>
+                <p id="verdict-text">Technically a Sadya.</p>
+            </div>
+
+            <div id="violations-container">
+                <div class="section-title">🚨 Violations & Roasts</div>
+                <ul id="violations-list" class="violations-list"></ul>
+            </div>
+
+            <div>
+                <div class="section-title">🍽️ Dish Placements & Zones</div>
+                <div id="dishes-grid" class="dishes-grid"></div>
+            </div>
+
+            <div class="api-info">
+                <strong>API Endpoint:</strong> <code>POST /audit</code> with form-data field <code>image</code>.<br>
+                Example: <code>curl -F "image=@sadya.jpg" https://YOUR_RENDER_URL/audit</code>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Made with ❤️ for TinkerHub Useless Projects
+    </footer>
+
+    <script>
+        const imageInput = document.getElementById('image-input');
+        const dropzone = document.getElementById('dropzone');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        let selectedFile = null;
+
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                dropzone.style.display = 'none';
+                previewContainer.style.display = 'block';
+                results.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetForm() {
+            selectedFile = null;
+            imageInput.value = '';
+            dropzone.style.display = 'block';
+            previewContainer.style.display = 'none';
+            results.style.display = 'none';
+            loading.style.display = 'none';
+        }
+
+        const funnyLoadingMessages = [
+            "Summoning the Kerala Sadhya Council...",
+            "Checking distance between Pickle and Rice...",
+            "Measuring spatial disrespect on banana leaf...",
+            "Verifying Sambhar jurisdictional compliance...",
+            "Consulting the ancestors..."
+        ];
+
+        async function runAudit() {
+            if (!selectedFile) return;
+
+            loading.style.display = 'block';
+            previewContainer.style.display = 'none';
+            results.style.display = 'none';
+
+            let msgIdx = 0;
+            const msgTimer = setInterval(() => {
+                msgIdx = (msgIdx + 1) % funnyLoadingMessages.length;
+                document.getElementById('loading-msg').innerText = funnyLoadingMessages[msgIdx];
+            }, 1800);
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            try {
+                const response = await fetch('/audit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(msgTimer);
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || err.details || "Server error during audit");
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (err) {
+                clearInterval(msgTimer);
+                loading.style.display = 'none';
+                previewContainer.style.display = 'block';
+                alert('Audit Error: ' + err.message);
+            }
+        }
+
+        function displayResults(data) {
+            loading.style.display = 'none';
+            results.style.display = 'block';
+
+            // Score & Badge color
+            const score = data.score ?? 0;
+            document.getElementById('score-val').innerText = score;
+            document.getElementById('dishes-count').innerText = data.dishes_detected ?? 0;
+
+            const badge = document.getElementById('score-badge');
+            if (score >= 80) {
+                badge.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            } else if (score >= 55) {
+                badge.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+            } else {
+                badge.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+            }
+
+            // Verdict
+            document.getElementById('verdict-text').innerText = `"${data.verdict}"`;
+
+            // Violations
+            const vList = document.getElementById('violations-list');
+            vList.innerHTML = '';
+            if (data.violations && data.violations.length > 0) {
+                data.violations.forEach(v => {
+                    const li = document.createElement('li');
+                    li.innerText = v;
+                    vList.appendChild(li);
+                });
+                document.getElementById('violations-container').style.display = 'block';
+            } else {
+                document.getElementById('violations-container').style.display = 'none';
+            }
+
+            // Dishes grid
+            const dGrid = document.getElementById('dishes-grid');
+            dGrid.innerHTML = '';
+            if (data.dishes && data.dishes.length > 0) {
+                data.dishes.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'dish-card';
+
+                    const statusClass = 'status-' + (d.status || 'unknown');
+                    card.innerHTML = `
+                        <div>
+                            <div class="dish-header">
+                                <span class="dish-name">${d.name}</span>
+                                <span class="dish-status ${statusClass}">${d.status}</span>
+                            </div>
+                            <div class="dish-meta">Zone: <b>${d.zone || 'unknown'}</b> · Conf: ${(d.confidence * 100).toFixed(0)}%</div>
+                            <div class="dish-msg">"${d.message || ''}"</div>
+                        </div>
+                    `;
+                    dGrid.appendChild(card);
+                });
+            } else {
+                dGrid.innerHTML = '<p style="color: var(--text-muted);">No dishes detected.</p>';
+            }
+
+            // Scroll results into view
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

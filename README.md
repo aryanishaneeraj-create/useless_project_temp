@@ -39,10 +39,30 @@ For Hardware:
 ### Implementation
 For Software:
 # Installation
-[commands]
+```bash
+git clone https://github.com/aryanishaneeraj-create/useless_project_temp.git
+cd useless_project_temp
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-# Run
-[commands]
+# Run Locally
+```bash
+python backend/app.py
+```
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser, or test with:
+```bash
+python test_api.py
+```
+
+# Render Deployment (Single Web Service)
+- **Environment:** Python
+- **Build Command:** `pip install --upgrade pip && pip install -r requirements.txt`
+- **Start Command:** `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 backend.app:app`
 
 ### Project Documentation
 For Software:

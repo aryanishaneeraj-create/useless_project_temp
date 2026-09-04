@@ -1,5 +1,12 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+"""
+Legacy FastAPI Prototype.
+For the active production server with computer vision detection, use backend/app.py.
+"""
+try:
+    from fastapi import FastAPI
+    from pydantic import BaseModel
+except ImportError:
+    pass
 
 from backend.auditor import audit_item
 
@@ -34,7 +41,9 @@ def audit(request: AuditRequest):
         result = audit_item(
             item.name,
             item.x,
-            item.y
+            item.y,
+            1000,
+            1000
         )
 
         results.append(result)

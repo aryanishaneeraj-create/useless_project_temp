@@ -1,17 +1,24 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 import os
 import tempfile
+from pathlib import Path
 
 from backend.detect import inspect_image
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ============================================================
 #                    FLASK APP
 # ============================================================
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder=str(BASE_DIR),
+    static_url_path=""
+)
 
 CORS(app)
 
@@ -22,19 +29,28 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
 
 # ============================================================
-#                    HOME / HEALTH CHECK
+#                    HOME / HEALTH CHECK / UI
 # ============================================================
 
 @app.route("/", methods=["GET"])
 def home():
+    # If accessed from a web browser, serve index.html
+    if request.accept_mimetypes.accept_html and not request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        index_file = BASE_DIR / "index.html"
+        if index_file.exists() and index_file.stat().st_size > 10:
+            return send_from_directory(str(BASE_DIR), "index.html")
 
     return jsonify({
-
         "status": "online",
+        "message": "SADYA AUDITOR BACKEND IS RUNNING 🚨"
+    })
 
-        "message":
-            "SADYA AUDITOR BACKEND IS RUNNING 🚨"
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({
+        "status": "online",
+        "message": "SADYA AUDITOR BACKEND IS RUNNING 🚨"
     })
 
 
@@ -185,8 +201,10 @@ def audit():
 # ============================================================
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=True
+        port=port,
+        debug=debug
     )

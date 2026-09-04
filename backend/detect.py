@@ -7,13 +7,24 @@ from backend.auditor import (
 )
 
 
+import os
+from pathlib import Path
+
 # ============================================================
 #                    MODEL SETUP
 # ============================================================
 
-print("Loading Sadya Auditor model...")
+# Resolve model path dynamically from project root or environment
+BASE_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_MODEL_PATH = BASE_DIR / "yoloe-11s-seg.pt"
+MODEL_PATH = os.environ.get(
+    "MODEL_PATH",
+    str(DEFAULT_MODEL_PATH) if DEFAULT_MODEL_PATH.exists() else "yoloe-11s-seg.pt"
+)
 
-model = YOLOE("yoloe-11s-seg.pt")
+print(f"Loading Sadya Auditor model from {MODEL_PATH}...")
+
+model = YOLOE(MODEL_PATH)
 
 
 # ============================================================

@@ -9,6 +9,7 @@ from backend.auditor import (
 
 import os
 from pathlib import Path
+import torch
 
 # ============================================================
 #                    MODEL SETUP
@@ -21,6 +22,7 @@ MODEL_PATH = os.environ.get(
     "MODEL_PATH",
     str(DEFAULT_MODEL_PATH) if DEFAULT_MODEL_PATH.exists() else "yoloe-11s-seg.pt"
 )
+EMBEDDINGS_FILE = Path(__file__).resolve().parent / "dish_embeddings.pt"
 
 
 
@@ -126,7 +128,13 @@ def get_model():
     if _model is None:
         print(f"Loading Sadya Auditor model from {MODEL_PATH}...", flush=True)
         m = YOLOE(MODEL_PATH)
-        m.set_classes(PROMPTS)
+        if EMBEDDINGS_FILE.exists():
+            print(f"Loading precomputed dish embeddings from {EMBEDDINGS_FILE}...", flush=True)
+            pe = torch.load(str(EMBEDDINGS_FILE), weights_only=True)
+            m.set_classes(PROMPTS, pe)
+        else:
+            print("Warning: precomputed embeddings not found, computing via text encoder...", flush=True)
+            m.set_classes(PROMPTS)
         _model = m
         print("Sadya Auditor model ready!", flush=True)
     return _model
